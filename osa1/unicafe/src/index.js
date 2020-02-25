@@ -10,28 +10,32 @@ const FeedbackStatistic = ({feedbackType, amount}) => (
   <p>{feedbackType} {amount}</p>
 )
 
-const AverageFeedback = ({good, neutral, bad}) => {
-  const feedbackCount = good + neutral + bad
+const AverageFeedback = ({good, bad, feedbackCount}) => {
   const average = ( (good * 1) + (bad * -1) ) / feedbackCount
 
   return (<p>average {average}</p> )
 }
 
-const PositiveFeedback = ({good, neutral, bad}) => {
-  const feedbackCount = good + neutral + bad
+const PositiveFeedback = ({good, feedbackCount}) => {
   const positivePercent = (good / feedbackCount) * 100
 
   return (<p>positive {positivePercent} %</p>)
 }
 
 const Statistics = ({good, neutral, bad}) => {
+  const feedbackCount = good + neutral + bad
+
+  if (feedbackCount === 0) {
+    return <p>No feedback given</p>
+  }
+
   return (
     <>
       <FeedbackStatistic feedbackType={"good"} amount={good}/>
       <FeedbackStatistic feedbackType={"neutral"} amount={neutral}/>
       <FeedbackStatistic feedbackType={"bad"} amount={bad}/>
-      <AverageFeedback good={good} neutral={neutral} bad={bad}/>
-      <PositiveFeedback good={good} neutral={neutral} bad={bad}/>
+      <AverageFeedback good={good} neutral={neutral} bad={bad} feedbackCount={feedbackCount}/>
+      <PositiveFeedback good={good} feedbackCount={feedbackCount}/>
     </>
   )
 }
