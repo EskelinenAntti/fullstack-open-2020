@@ -6,8 +6,8 @@ const Button = ({text, handleClick}) => (
   <button onClick={handleClick}>{text}</button>
 )
 
-const FeedbackStatistic = ({feedbackType, amount}) => (
-  <p>{feedbackType} {amount}</p>
+const StatisticsLine = ({text, value}) => (
+  <p>{text} {value}</p>
 )
 
 const AverageFeedback = ({good, bad, feedbackCount}) => {
@@ -31,9 +31,9 @@ const Statistics = ({good, neutral, bad}) => {
 
   return (
     <>
-      <FeedbackStatistic feedbackType={"good"} amount={good}/>
-      <FeedbackStatistic feedbackType={"neutral"} amount={neutral}/>
-      <FeedbackStatistic feedbackType={"bad"} amount={bad}/>
+      <StatisticsLine text="good" value={good}/>
+      <StatisticsLine text="neutral" value={neutral}/>
+      <StatisticsLine text="bad" value={bad}/>
       <AverageFeedback good={good} neutral={neutral} bad={bad} feedbackCount={feedbackCount}/>
       <PositiveFeedback good={good} feedbackCount={feedbackCount}/>
     </>
@@ -50,9 +50,9 @@ const App = () => {
   return (
     <div>
       <h1>give feedback</h1>
-      <Button text={"good"} handleClick={() => setGood(good+1)}/>
-      <Button text={"neutral"} handleClick={() => setNeutral(neutral+1)}/>
-      <Button text={"bad"} handleClick={() => setBad(bad+1)}/>
+      <Button text="good" handleClick={() => setGood(good+1)}/>
+      <Button text="neutral" handleClick={() => setNeutral(neutral+1)}/>
+      <Button text="bad" handleClick={() => setBad(bad+1)}/>
       <h1>statistics</h1>
       <Statistics good={good} neutral={neutral} bad={bad}/>
     </div>
