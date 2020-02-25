@@ -7,19 +7,19 @@ const Button = ({text, handleClick}) => (
 )
 
 const StatisticsLine = ({text, value}) => (
-  <p>{text} {value}</p>
+  <tr><td>{text}</td><td>{value}</td></tr>
 )
 
 const AverageFeedback = ({good, bad, feedbackCount}) => {
   const average = ( (good * 1) + (bad * -1) ) / feedbackCount
 
-  return (<p>average {average}</p> )
+  return (<tr><td>average</td><td>{average}</td></tr>)
 }
 
 const PositiveFeedback = ({good, feedbackCount}) => {
   const positivePercent = (good / feedbackCount) * 100
 
-  return (<p>positive {positivePercent} %</p>)
+  return ( <tr><td>positive</td><td> {positivePercent} %</td></tr>)
 }
 
 const Statistics = ({good, neutral, bad}) => {
@@ -30,13 +30,15 @@ const Statistics = ({good, neutral, bad}) => {
   }
 
   return (
-    <>
+    <table>
+      <tbody>
       <StatisticsLine text="good" value={good}/>
       <StatisticsLine text="neutral" value={neutral}/>
       <StatisticsLine text="bad" value={bad}/>
       <AverageFeedback good={good} neutral={neutral} bad={bad} feedbackCount={feedbackCount}/>
       <PositiveFeedback good={good} feedbackCount={feedbackCount}/>
-    </>
+      </tbody>
+    </table>
   )
 }
 
