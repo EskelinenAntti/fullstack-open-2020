@@ -5,26 +5,38 @@ const randomIndex = (list) => (
   Math.floor(Math.random() * list.length)
 )
 
+const AnecdoteView = ({anecdote, votes}) => (
+  <p>{anecdote} <br/>
+      has {votes} votes</p>
+)
+
 const App = (props) => {
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(randomIndex(props.anecdotes))
   const [votes, setVotes] = useState(new Array(props.anecdotes.length).fill(0))
+  const [topAnecdote, setTopAnecdote] = useState(selected)
 
   const handleNextAnecdote = () => {
     setSelected(randomIndex(props.anecdotes))
   }
 
   const handleVote = () => {
-    const copy = [...votes]
-    copy[selected] += 1
-    setVotes(copy)
+    const votesCopy = [...votes]
+    votesCopy[selected] += 1
+    setVotes(votesCopy)
+
+    if (votesCopy[selected]>votesCopy[topAnecdote]) {
+      setTopAnecdote(selected)
+    }
   }
 
   return (
     <div>
-      <p>{props.anecdotes[selected]} <br/>
-      has {votes[selected]} votes</p>
+      <h1>Anecdote of the day</h1>
+      <AnecdoteView anecdote={props.anecdotes[selected]} votes={votes[selected]}/>
       <button onClick={handleVote}>vote</button>
       <button onClick={handleNextAnecdote}>next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      <AnecdoteView anecdote={props.anecdotes[topAnecdote]} votes={votes[topAnecdote]}/>
     </div>
   )
 }
