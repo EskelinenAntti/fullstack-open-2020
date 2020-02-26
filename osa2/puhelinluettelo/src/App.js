@@ -14,10 +14,26 @@ const App = () => {
     {
       name: 'Arto Hellas',
       number: '+358 23 456 7890'
+    },
+    {
+      name: 'Antti Eskelinen',
+      number: '123445'
     }
   ])
+
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
+  const [ filter, setFilter ] = useState('')
+
+  const handleNameChange = (event) => setNewName(event.target.value)
+  const handleNumberChange = (event) => setNewNumber(event.target.value)
+  const handleFilterChange = (event) => setFilter(event.target.value)
+
+  const caseinsensitiveFilter = (person) => (
+    person.name.toUpperCase().includes(
+      filter.toUpperCase()
+    )
+  )
 
   const handleAddName = (event) => {
     event.preventDefault()
@@ -34,12 +50,13 @@ const App = () => {
     setNewNumber('')
   }
 
-  const handleNameChange = (event) => setNewName(event.target.value)
-  const handleNumberChange = (event) => setNewNumber(event.target.value)
-
   return (
     <div>
       <h2>Phonebook</h2>
+
+      filter shown with <input value={filter} onChange={handleFilterChange}/>
+
+      <h2>add a new</h2>
       <form onSubmit={handleAddName}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
@@ -51,9 +68,12 @@ const App = () => {
           <button type="submit">add</button>
         </div>
       </form>
+
       <h2>Numbers</h2>
       <ul>
-        {persons.map(person => <Number key={person.name} person={person}/>)}
+        {persons
+          .filter(caseinsensitiveFilter)
+          .map(person => <Number key={person.name} person={person}/>)}
       </ul>
     </div>
   )
