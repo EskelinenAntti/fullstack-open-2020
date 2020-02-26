@@ -1,47 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
-const Number = ({person}) => (
-  <li>{person.name} {person.number}</li>
-)
+import Filter from './components/filter'
+import PersonForm from './components/personForm'
+import Persons from './components/persons'
 
 const nameAlreadyExists = (persons, name) => {
   return persons.map(p=>p.name).includes(name)
-}
-
-const Filter = ({filter, onFilterChange}) => {
-  return (
-    <p>filter shown with <input value={filter} onChange={onFilterChange}/></p>
-  )
-}
-
-const PersonForm = (props) => (
-
-  <form onSubmit={props.handleAddPerson}>
-    <div>
-      name: <input value={props.newName} onChange={props.handleNameChange} />
-    </div>
-    <div>
-      number: <input value={props.newNumber} onChange={props.handleNumberChange} />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-)
-
-const Persons = ({persons, filter}) => {
-  const caseinsensitiveFilter = (person) => (
-    person.name.toUpperCase().includes(
-      filter.toUpperCase()
-    )
-  )
-  return (
-    <ul>
-      {persons
-        .filter(caseinsensitiveFilter)
-        .map(person => <Number key={person.name} person={person}/>)}
-    </ul>
-  )
 }
 
 const App = () => {
@@ -58,9 +23,15 @@ const App = () => {
   ])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
-
-
   const [ filter, setFilter ] = useState('')
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+    }, [])
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
