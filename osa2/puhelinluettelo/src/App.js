@@ -11,16 +11,7 @@ const nameAlreadyExists = (persons, name) => {
 
 const App = () => {
 
-  const [ persons, setPersons] = useState([
-    {
-      name: 'Arto Hellas',
-      number: '+358 23 456 7890'
-    },
-    {
-      name: 'Antti Eskelinen',
-      number: '123445'
-    }
-  ])
+  const [ persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
