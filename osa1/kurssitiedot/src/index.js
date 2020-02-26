@@ -23,9 +23,9 @@ const Total = (props) => {
     let exercisesTotal = 0;
     props.parts.forEach(part => exercisesTotal += part.exercises);
     return (
-      <p>
-        Number of exercises {exercisesTotal}
-      </p>
+      <b>
+        Total of {exercisesTotal} exercises
+      </b>
     );
 };
 
