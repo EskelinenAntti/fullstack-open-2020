@@ -11,11 +11,14 @@ const Filter = ({filter, handleFilterChanged}) => {
   )
 }
 
-const MainView = ({countries}) => {
+const MainView = ({countries, onCountrySelected}) => {
   if (countries.length === 1) {
     return ( <CountryDetails country={countries[0]}/> )
   } else if ( 1 < countries.length && countries.length <= 10) {
-    return (<CountryListing countries={countries}/>)
+    return ( <CountryListing
+              countries={countries}
+              onCountrySelected={onCountrySelected}/>
+    )
   } else if (countries.length > 10 ) {
     return ( <p>Too many matches, specify another filter</p> )
   } else {
@@ -23,11 +26,28 @@ const MainView = ({countries}) => {
   }
 }
 
-const CountryListing = ({countries}) => {
+const CountryListing = ({countries, onCountrySelected}) => {
   return (
     <ul>
-      {countries.map(country => <li key={country.name}>{country.name}</li>)}
+      {countries.map(country =>
+        <CountryListingItem
+          key={country.name}
+          country={country}
+          onCountrySelected={onCountrySelected}
+        />)}
     </ul>
+  )
+}
+
+const CountryListingItem = ({country, onCountrySelected}) => {
+  const createClickHandler = (country) => {
+    return () => onCountrySelected(country)
+  }
+  return (
+    <li>
+      {country.name}
+      <button onClick={createClickHandler(country)}>show</button>
+    </li>
   )
 }
 
@@ -56,6 +76,10 @@ const App = () => {
     country.name.toLowerCase().includes(filter.toLowerCase())
   )
 
+  const onCountrySelected = (country) => (
+    setFilter(country.name)
+  )
+
   useEffect(() => {
     axios
       .get(COUNTRY_RESOURCE)
@@ -68,7 +92,9 @@ const App = () => {
   return (
     <div>
       <Filter filter={filter} handleFilterChanged={handleFilterChanged} />
-      <MainView countries={countries.filter(countryNameFilter)}/>
+      <MainView
+        countries={countries.filter(countryNameFilter)}
+        onCountrySelected={onCountrySelected}/>
     </div>
   );
 }
