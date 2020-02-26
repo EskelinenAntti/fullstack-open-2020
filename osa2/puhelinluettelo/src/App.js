@@ -4,6 +4,11 @@ const Number = ({person}) => (
   <li>{person.name}</li>
 )
 
+const nameAlreadyExists = (persons, name) => {
+  return persons.map(p=>p.name).includes(name)
+}
+
+
 const App = () => {
   const [ persons, setPersons] = useState([
     { name: 'Arto Hellas' }
@@ -12,7 +17,11 @@ const App = () => {
 
   const handleAddName = (event) => {
     event.preventDefault()
-    console.log(event.target)
+
+    if (nameAlreadyExists(persons, newName)) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
 
     const newPerson = {
       name: newName
