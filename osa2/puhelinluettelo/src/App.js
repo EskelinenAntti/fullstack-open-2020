@@ -7,7 +7,7 @@ import Persons from './components/persons'
 import personService from './services/persons'
 
 const nameAlreadyExists = (persons, name) => {
-  return persons.map(p=>p.name).includes(name)
+  return persons.filter(person=>person.name === name).length > 0
 }
 
 const App = () => {
@@ -29,12 +29,24 @@ const App = () => {
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleFilterChange = (event) => setFilter(event.target.value)
 
-  const handleAddPerson = (event) => {
-    event.preventDefault()
-    if (nameAlreadyExists(persons, newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
+
+  const handleUpdate = (name) => {
+    const oldPerson = persons.find(p => p.name === name)
+    const updatedPerson = {...oldPerson, number: newNumber}
+
+    personService
+      .update(updatedPerson.id, updatedPerson)
+      .then(returnedPerson =>
+        setPersons(
+          persons.map(
+            person =>
+              person.id !== oldPerson.id ? person: returnedPerson
+            )
+          )
+        )
+  }
+
+  const handleCreate = () => {
     const newPerson = {
       name: newName,
       number: newNumber
@@ -47,6 +59,23 @@ const App = () => {
 
     setNewName('')
     setNewNumber('')
+  }
+
+
+  const handleAddPerson = (event) => {
+    event.preventDefault()
+
+    if (nameAlreadyExists(persons, newName)) {
+      const acceptModification = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+
+      if (acceptModification) {
+        handleUpdate(newName)
+      }
+    } else {
+      handleCreate()
+    }
   }
 
   const handleDelete = deletedPerson => {
