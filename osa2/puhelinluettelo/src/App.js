@@ -80,8 +80,12 @@ const App = () => {
           )
         setMessage({content:`Updated ${updatedPerson.name}.`, isError: false})
         })
-      .catch(_ => {
-        setMessage({content: `Information of ${name} has already been removed from server`, isError: true})
+      .catch(error => {
+        if (error.message === "Request failed with status code 404"){
+          setMessage({content: `Information of ${name} has already been removed from server`, isError: true})
+        } else {
+          setMessage({content: error.response.data.error, isError: true})
+        }
       })
   }
 
@@ -96,6 +100,9 @@ const App = () => {
       .then(newPerson => {
         setPersons(persons.concat(newPerson))
         setMessage({content: `Created ${newPerson.name}.`, isError: false})
+      })
+      .catch(error => {
+        setMessage({content: error.response.data.error, isError: true})
       })
 
     setNewName('')
