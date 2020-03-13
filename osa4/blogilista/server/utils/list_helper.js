@@ -43,7 +43,7 @@ const mostBlogs = (blogs) => {
   })
 
   const authors = Object.values(blogCountByAuthor)
-  return findAuthorWithMost('blogs', authors)
+  return findAuthorWithMost('blogs',  authors)
 }
 
 const mostLikes = (blogs) => {
@@ -62,7 +62,7 @@ const mostLikes = (blogs) => {
   })
 
   const authors = Object.values(blogCountByAuthor)
-  return findAuthorWithMost('likes', authors)
+  return findAuthorWithMost('likes',  authors)
 }
 
 const findAuthorWithMost = (field, authors) => {
