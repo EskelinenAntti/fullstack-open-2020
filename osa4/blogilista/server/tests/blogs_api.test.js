@@ -1,17 +1,31 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const Blog = require('../models/blog')
-const helper = require('../tests/test_helper')
-
+const User = require('../models/user')
+const blogHelper = require('./blog_test_helper')
+const userHelper = require('./user_test_helper')
 const app = require('../app')
 
 const api = supertest(app)
 
+const linkUserAndBlogs = async () => {
 
+  const user = await userHelper.singleUserInDb()
+  const blogs = await blogHelper.blogsInDb()
+
+  user.blogs = blogs.map(blog => blog._id)
+
+  user.save()
+  await Blog.updateMany({}, { $set: { user: user._id } })
+}
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  await Blog.insertMany(helper.intialBlogs)
+  await User.deleteMany({})
+
+  await Blog.insertMany(blogHelper.initialBlogs)
+  await User.insertMany(userHelper.initialUsers)
+  await linkUserAndBlogs()
 })
 
 describe('The get method ', () => {
@@ -22,7 +36,7 @@ describe('The get method ', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    expect(response.body.length).toBe(6)
+    expect(response.body.length).toBe(blogHelper.initialBlogs.length)
   })
 
   test('have \'id\' as identifying field', async () => {
@@ -33,7 +47,8 @@ describe('The get method ', () => {
 })
 
 describe('The post method ', () => {
-  test('add a new blog', async () => {
+  test('can add a new blog', async () => {
+
     const newBlog = {
       title: 'JeeJee blogi',
       author: 'Antti Eskelinen',
@@ -44,12 +59,13 @@ describe('The post method ', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `bearer ${await userHelper.getToken()}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const blogs = await helper.blogsInDb()
+    const blogs = await blogHelper.blogsInDb()
 
-    expect(blogs.length).toBe(helper.intialBlogs.length + 1)
+    expect(blogs.length).toBe(blogHelper.initialBlogs.length + 1)
 
   })
 
@@ -63,6 +79,7 @@ describe('The post method ', () => {
     const response = await api
       .post('/api/blogs')
       .send(blogWithoutLikes)
+      .set('Authorization', `bearer ${await userHelper.getToken()}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -79,6 +96,7 @@ describe('The post method ', () => {
     await api
       .post('/api/blogs')
       .send(blogWithoutTitle)
+      .set('Authorization', `bearer ${await userHelper.getToken()}`)
       .expect(400)
   })
 
@@ -92,21 +110,40 @@ describe('The post method ', () => {
     await api
       .post('/api/blogs')
       .send(blogWithoutUrl)
+      .set('Authorization', `bearer ${await userHelper.getToken()}`)
       .expect(400)
+  })
+
+  test('returns 401 if token is missing from request', async () => {
+    const newBlog = {
+      title: 'JeeJee blogi',
+      author: 'Antti Eskelinen',
+      url: 'http://jeejee.com',
+      likes: 100
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+
+    const blogs = await blogHelper.blogsInDb()
+    expect(blogHelper.initialBlogs.length).toBe(blogs.length)
   })
 })
 
 describe('The delete method', () => {
 
   test('can delete a blog', async () => {
-    const initialBlogs = await helper.blogsInDb()
-    const deletedBlog = await helper.singleBlogInDb()
+    const initialBlogs = await blogHelper.blogsInDb()
+    const deletedBlog = await blogHelper.singleBlogInDb()
 
     await api
       .delete(`/api/blogs/${deletedBlog.id}`)
+      .set('Authorization', `bearer ${await userHelper.getToken()}`)
       .expect(204)
 
-    const blogsAfterDeletion = await helper.blogsInDb()
+    const blogsAfterDeletion = await blogHelper.blogsInDb()
     expect(blogsAfterDeletion.length).toBe(initialBlogs.length - 1)
     expect(blogsAfterDeletion.map(blog => blog.title)).not.toContain(deletedBlog.title)
   })
@@ -115,7 +152,7 @@ describe('The delete method', () => {
 describe('The put method', () => {
 
   test('can update a blog', async () => {
-    const updatedBlog = await helper.singleBlogInDb()
+    const updatedBlog = await blogHelper.singleBlogInDb()
     updatedBlog.likes += 1
 
     await api
@@ -123,11 +160,11 @@ describe('The put method', () => {
       .send(updatedBlog)
       .expect(200)
 
-    expect(await helper.singleBlogInDb()).toEqual(updatedBlog)
+    expect(await blogHelper.singleBlogInDb()).toEqual(updatedBlog)
   })
 
   test('does not update blog if required field is missing', async () => {
-    const updatedBlog = await helper.singleBlogInDb()
+    const updatedBlog = await blogHelper.singleBlogInDb()
     delete updatedBlog.url
 
     await api
@@ -135,15 +172,15 @@ describe('The put method', () => {
       .send(updatedBlog)
       .expect(400)
 
-    const blogAfter = await helper.singleBlogInDb()
+    const blogAfter = await blogHelper.singleBlogInDb()
     expect(blogAfter.url).toBeDefined()
 
   })
 
   test('returns 404 if blog is not found', async () => {
-    const notExistingId = await helper.notExistingId()
+    const notExistingId = await blogHelper.notExistingId()
 
-    const body = await helper.singleBlogInDb()
+    const body = await blogHelper.singleBlogInDb()
 
     await api
       .put(`/api/blogs/${notExistingId}`)
@@ -153,12 +190,13 @@ describe('The put method', () => {
 
   test('returns 400 if id is invalid', async () => {
     const invalidId = 'id'
-    const body = await helper.singleBlogInDb()
+    const body = await blogHelper.singleBlogInDb()
 
     await api
       .put(`/api/blogs/${invalidId}`)
       .send(body)
       .expect(400)
+
   })
 
 })
