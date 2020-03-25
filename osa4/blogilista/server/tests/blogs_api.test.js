@@ -201,6 +201,6 @@ describe('The put method', () => {
 
 })
 
-afterAll(() => {
+afterAll(async () => {
   mongoose.connection.close()
 })

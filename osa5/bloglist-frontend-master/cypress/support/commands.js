@@ -33,15 +33,18 @@ Cypress.Commands.add('login', ({ username, password }) => {
   })
 })
 
-Cypress.Commands.add('createBlog', ({ title, author, url }) => {
-  cy.request({
-    url: 'http://localhost:3001/api/blogs',
-    method: 'POST',
-    body: { title, author, url },
-    headers: {
-      'Authorization': `bearer ${JSON.parse(localStorage.getItem('blogUser')).token}`
-    }
-  })
+Cypress.Commands.add('createBlog', (...blogs) => {
+
+  blogs.forEach(blog =>
+    cy.request({
+      url: 'http://localhost:3001/api/blogs',
+      method: 'POST',
+      body: blog,
+      headers: {
+        'Authorization': `bearer ${JSON.parse(localStorage.getItem('blogUser')).token}`
+      }
+    })
+  )
 
   cy.visit('http://localhost:3000')
 })

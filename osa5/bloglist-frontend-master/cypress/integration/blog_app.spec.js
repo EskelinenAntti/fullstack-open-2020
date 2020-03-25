@@ -88,25 +88,31 @@ describe('Blog app', function() {
         .click()
       cy.get('html').should('not.contain', blog.title)
     })
-/*
+
     it('blogs are returned arranged by likes', function() {
 
-      const blog1 = { ...blog }
-      const blog2 = { ...blog }
-      const blog3 = { ...blog }
+      const blog1 = { ...blog, likes: 0 }
+      const blog2 = { ...blog, likes: 3 }
+      const blog3 = { ...blog, likes: 2 }
 
       blog1.likes = 0
       blog2.likes = 3
       blog3.likes = 2
 
-      cy.createBlog(blog1)
-      cy.createBlog(blog2)
-      cy.createBlog(blog3)
+      cy.createBlog(blog1, blog2, blog3)
 
-      cy.get('button').contains('show').then( buttons => {
-        buttons.forEach(button => button.click())
+      cy.get('.show-blog-button').then( buttons => {
+        for (let i = 0; i< buttons.length; i++) {
+          cy.wrap(buttons[i]).click()
+        }
       })
 
-    })*/
+      cy.get('.blog').then( blogs => {
+        cy.wrap(blogs[0]).contains('likes: 3')
+        cy.wrap(blogs[1]).contains('likes: 2')
+        cy.wrap(blogs[2]).contains('likes: 0')
+      })
+
+    })
   })
 })

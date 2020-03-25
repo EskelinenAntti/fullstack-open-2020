@@ -71,6 +71,6 @@ describe('The POST method', () => {
   })
 })
 
-afterAll(() => {
+afterAll(async () => {
   mongoose.connection.close()
 })
