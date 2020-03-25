@@ -15,9 +15,18 @@ const getAll = () => {
 }
 
 const create = async blog => {
-  const header = authHeader()
-  const response = await axios.post(baseUrl, blog, header)
+  const response = await axios.post(baseUrl, blog, authHeader())
   return response.data
 }
 
-export default { getAll, create, setToken }
+const update = async blog => {
+  const response = await axios.put(`${baseUrl}/${blog.id}`, blog)
+  return response.data
+}
+
+const remove = async blog => {
+  const response = await axios.delete(`${baseUrl}/${blog.id}`, authHeader())
+  return response.data
+}
+
+export default { getAll, create, update, remove, setToken }
