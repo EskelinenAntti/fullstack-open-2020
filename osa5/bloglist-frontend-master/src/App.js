@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useImperativeHandle } from 'react'
+import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Togglable from './components/Togglable'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
+import PropTypes from 'prop-types'
 
 const BLOG_USER_KEY = 'blogUser'
 
@@ -32,39 +35,42 @@ const LoginForm = ({ onUserLoggedIn, setNotification }) => {
     } catch (error) {
       if (error.message === 'Request failed with status code 401') {
         setNotification('Invalid credentials')
-     } else {
-       setNotification('Could not log in, check network connection')
-     }
+      } else {
+        setNotification('Could not log in, check network connection')
+      }
     }
-
   }
 
   return (
     <div>
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
-      <div>
-        username
+        <div>
+          username
           <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </div>
+        <div>
+          password
           <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
+            type="password"
+            value={password}
+            name="Password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
+        <button type="submit">login</button>
+      </form>
     </div>
   )
+}
+
+LoginForm.propTypes = {
+  onUserLoggedIn: PropTypes.func.isRequired
 }
 
 const NewBlogForm = ({ onBlogCreated, setNotification }) => {
@@ -94,24 +100,24 @@ const NewBlogForm = ({ onBlogCreated, setNotification }) => {
       <form onSubmit={handleSubmit}>
         <div>title:
           <input
-              type="text"
-              value={title}
-              name="Title"
-              onChange={({ target }) => setTitle(target.value)}/>
+            type="text"
+            value={title}
+            name="Title"
+            onChange={({ target }) => setTitle(target.value)}/>
         </div>
         <div>author:
           <input
-              type="text"
-              value={author}
-              name="Author"
-              onChange={({ target }) => setAuthor(target.value)}/>
+            type="text"
+            value={author}
+            name="Author"
+            onChange={({ target }) => setAuthor(target.value)}/>
         </div>
         <div>url:
           <input
-              type="text"
-              value={url}
-              name="Url"
-              onChange={({ target }) => setUrl(target.value)}/>
+            type="text"
+            value={url}
+            name="Url"
+            onChange={({ target }) => setUrl(target.value)}/>
         </div>
         <button type="submit">create</button>
 
@@ -120,36 +126,16 @@ const NewBlogForm = ({ onBlogCreated, setNotification }) => {
   )
 }
 
-const Togglable = React.forwardRef((props, ref) => {
+NewBlogForm.propTypes = {
+  onBlogCreated: PropTypes.func.isRequired
+}
 
-  useImperativeHandle(ref, () => {
-    return {toggleVisibility}
-  })
-
-  const [visible, setVisible] = useState(false)
-
-  const toggleVisibility = () =>{ setVisible(!visible) }
-
-  const content = (
-    <>
-      {props.children}
-      <button onClick={()=>setVisible(false)}>cancel</button>
-    </>
-  )
-
-  const hidden = <button onClick={()=>setVisible(true)}>{props.buttonLabel}</button>
-
-  return (
-    visible ? content : hidden
-  )
-})
-
-const Notification = ({notification}) => {
+const Notification = ({ notification }) => {
   return(
     notification !== null &&
-    <p style={ {backgroundColor: 'grey'} }><b>{notification}</b></p>
+    <p style={{ backgroundColor: 'grey' }}><b>{notification}</b></p>
   )
-  }
+}
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
