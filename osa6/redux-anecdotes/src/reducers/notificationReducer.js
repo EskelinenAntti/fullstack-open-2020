@@ -17,9 +17,7 @@ export const clearNotification = () => {
 const notificationReducer = (state = { text: 'welcome', timer: null }, action) => {
   switch (action.type) {
     case 'SET_NOTIFICATION':
-      // This was not required, but is implemented for the sake of curiosity.
-      // If another notification is set before previous was cleared, cancel the
-      // old timeout, so the new notification is not cleared too early.
+
       if (state.timer !== null) {
         clearTimeout(state.timer)
       }
