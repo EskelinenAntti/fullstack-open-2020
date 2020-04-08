@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
 import loginService from '../services/login'
 import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { setNotification } from '../reducers/notificationReducer'
 
 // This differs a bit from the example as the actual login request is
 // also done in this component.
-const LoginForm = ({ onUserLoggedIn, setNotification }) => {
+const LoginForm = ({ onUserLoggedIn }) => {
+
+  const dispatch = useDispatch()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -23,13 +27,13 @@ const LoginForm = ({ onUserLoggedIn, setNotification }) => {
       setUsername('')
       setPassword('')
       onUserLoggedIn(user)
-      setNotification(`Hi ${user.name}!`)
+      dispatch(setNotification(`Hi ${user.name}!`))
 
     } catch (error) {
       if (error.message === 'Request failed with status code 401') {
-        setNotification('Invalid credentials')
+        dispatch(setNotification('Invalid credentials'))
       } else {
-        setNotification('Could not log in, check network connection')
+        dispatch(setNotification('Could not log in, check network connection'))
       }
     }
   }

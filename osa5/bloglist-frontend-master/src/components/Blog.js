@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 const Blog = ({ blog, onLiked, onDeleted }) => {
-
+  console.log(blog)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,

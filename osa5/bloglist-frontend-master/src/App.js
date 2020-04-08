@@ -3,6 +3,9 @@ import Blog from './components/Blog'
 import Togglable from './components/Togglable'
 import NewBlogForm from './components/NewBlogForm'
 import LoginForm from './components/LoginForm'
+import { setNotification } from './reducers/notificationReducer'
+
+import { useDispatch, useSelector } from 'react-redux'
 
 import blogService from './services/blogs'
 
@@ -16,10 +19,13 @@ const Notification = ({ notification }) => {
 }
 
 const App = () => {
+
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
-
+  // const [notification, setNotification] = useState(null)
+  const notification = useSelector(state => state.notification.text)
   const createBlogRef = React.createRef()
 
   const login = user => {
@@ -42,10 +48,10 @@ const App = () => {
     try {
       const blog = await blogService.create(createdBlog)
       blog.user = { ...user }
-      setNotification('Blog added succesfully!')
+      dispatch(setNotification('Blog added succesfully!'))
       setBlogs(blogs.concat(blog))
     } catch (error) {
-      setNotification('Something went wrong and the blog was not added')
+      dispatch(setNotification('Something went wrong and the blog was not added'))
     }
   }
 
@@ -65,15 +71,6 @@ const App = () => {
     }
     )
   }, [])
-
-  // Use effect hook once again to avoid memory leaks
-  useEffect(() => {
-    const clearNotification = () => setNotification(null)
-    const timer = setTimeout(clearNotification, 5000)
-
-    return () => clearInterval(timer)
-  }, [notification])
-
 
   const handleBlogLiked = async (blog) => {
     blog.likes += 1
@@ -104,7 +101,7 @@ const App = () => {
       {
         user === null &&
         <Togglable buttonLabel='login'>
-          <LoginForm onUserLoggedIn={login} setNotification={setNotification}/>
+          <LoginForm onUserLoggedIn={login}/>
         </Togglable>
       }
 
@@ -114,7 +111,7 @@ const App = () => {
         <div id='logged-user-content'>
           <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
           <Togglable buttonLabel='add blog' ref={createBlogRef}>
-            <NewBlogForm onBlogSubmitted={handleBlogCreated} setNotification={setNotification}></NewBlogForm>
+            <NewBlogForm onBlogSubmitted={handleBlogCreated}></NewBlogForm>
           </Togglable>
         </div>
       }
