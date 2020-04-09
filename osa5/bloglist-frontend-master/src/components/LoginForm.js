@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import loginService from '../services/login'
-import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
-import { setNotification } from '../reducers/notificationReducer'
+import { login } from '../reducers/userReducer'
+import {
+  Typography,
+  Button
+} from '@material-ui/core'
 
-// This differs a bit from the example as the actual login request is
-// also done in this component.
-const LoginForm = ({ onUserLoggedIn }) => {
+const LoginForm = () => {
 
   const dispatch = useDispatch()
 
@@ -22,25 +22,15 @@ const LoginForm = ({ onUserLoggedIn }) => {
         password
       }
 
-    try {
-      const user = await loginService.login(credentials)
-      setUsername('')
-      setPassword('')
-      onUserLoggedIn(user)
-      dispatch(setNotification(`Hi ${user.name}!`))
+    dispatch(login(credentials))
+    setUsername('')
+    setPassword('')
 
-    } catch (error) {
-      if (error.message === 'Request failed with status code 401') {
-        dispatch(setNotification('Invalid credentials'))
-      } else {
-        dispatch(setNotification('Could not log in, check network connection'))
-      }
-    }
   }
 
   return (
     <div>
-      <h2>Log in to application</h2>
+      <Typography variant='h2'>Log in to application</Typography>
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -62,14 +52,17 @@ const LoginForm = ({ onUserLoggedIn }) => {
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button id='login-button' type='submit'>login</button>
+        <Button id='login-button' type='submit'>login</Button>
       </form>
     </div>
   )
 }
 
+// This is no longer required after refactoring to using redux.
+/*
 LoginForm.propTypes = {
   onUserLoggedIn: PropTypes.func.isRequired
 }
+*/
 
 export default LoginForm
